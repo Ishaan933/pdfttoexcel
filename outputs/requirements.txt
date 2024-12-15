@@ -1,4 +1,0 @@
-Flask
-pandas
-PyPDF2
-flask_cors
