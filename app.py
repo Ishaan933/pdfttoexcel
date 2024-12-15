@@ -3,6 +3,7 @@ from tabula import read_pdf
 import pandas as pd
 import os
 import uuid
+import jpype
 
 app = Flask(__name__)
 
@@ -13,11 +14,15 @@ os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 os.makedirs(OUTPUT_FOLDER, exist_ok=True)
 
 def convert_pdf_to_excel_and_csv(pdf_path, excel_path, csv_path):
-    """Convert a PDF file to Excel and CSV formats using Tabula."""
+    """Convert a PDF file to Excel and CSV formats using Tabula with JPype backend."""
     try:
+        # Start JPype JVM for Tabula
+        if not jpype.isJVMStarted():
+            jpype.startJVM()
+
         # Extract tables from PDF (all pages)
         tables = read_pdf(pdf_path, pages="all", multiple_tables=True, output_format="dataframe", silent=True)
-        
+
         # If no tables were found, raise an error
         if not tables:
             return False, "No tables found in the uploaded PDF file."
