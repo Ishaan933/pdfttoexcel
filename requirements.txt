@@ -1,5 +1,3 @@
 Flask
 pandas
 tabula-py
-waitress
-uuid
