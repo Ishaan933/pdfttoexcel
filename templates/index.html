@@ -8,9 +8,9 @@
 <body>
     <h1>PDF to CSV/Excel Converter</h1>
     <div id="drop-area" style="border: 2px dashed #ccc; padding: 20px; text-align: center;">
-        <p>Drag & Drop your PDF here or click below</p>
+        <p>Drag & Drop your PDF here or click to upload</p>
         <input type="file" id="fileElem" style="display:none" accept="application/pdf" />
-        <button onclick="document.getElementById('fileElem').click()">Select a File</button>
+        <button onclick="document.getElementById('fileElem').click()">Select a PDF</button>
     </div>
     <div id="result" style="margin-top: 20px;"></div>
 
@@ -19,8 +19,13 @@
         const fileElem = document.getElementById("fileElem");
         const result = document.getElementById("result");
 
-        dropArea.addEventListener("drop", handleDrop);
         dropArea.addEventListener("dragover", (e) => e.preventDefault());
+        dropArea.addEventListener("drop", handleDrop);
+
+        fileElem.addEventListener("change", (e) => {
+            const file = e.target.files[0];
+            if (file) uploadFile(file);
+        });
 
         function handleDrop(e) {
             e.preventDefault();
@@ -28,29 +33,35 @@
             if (file) uploadFile(file);
         }
 
-        fileElem.addEventListener("change", (e) => {
-            const file = e.target.files[0];
-            if (file) uploadFile(file);
-        });
-
         async function uploadFile(file) {
             const formData = new FormData();
             formData.append("file", file);
 
-            const response = await fetch("/upload", {
-                method: "POST",
-                body: formData
-            });
+            result.innerHTML = "<p>Uploading and converting, please wait...</p>";
 
-            const data = await response.json();
-            if (data.error) {
-                result.innerHTML = `<p style="color:red;">Error: ${data.error}</p>`;
-            } else {
-                result.innerHTML = `
-                    <p>Conversion Successful!</p>
-                    <a href="${data.csv_download_link}" target="_blank">Download CSV</a><br>
-                    <a href="${data.excel_download_link}" target="_blank">Download Excel</a>
-                `;
+            try {
+                const response = await fetch("/upload", {
+                    method: "POST",
+                    body: formData
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    result.innerHTML = `
+                        <p>Conversion Successful!</p>
+                        <p>
+                            <a href="${data.download_csv}" target="_blank">Download CSV</a>
+                        </p>
+                        <p>
+                            <a href="${data.download_excel}" target="_blank">Download Excel</a>
+                        </p>
+                    `;
+                } else {
+                    result.innerHTML = `<p style="color: red;">Error: ${data.message}</p>`;
+                }
+            } catch (error) {
+                result.innerHTML = `<p style="color: red;">An unexpected error occurred: ${error.message}</p>`;
             }
         }
     </script>
