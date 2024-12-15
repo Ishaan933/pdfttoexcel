@@ -1,5 +1,0 @@
-Flask
-tabula-py
-pandas
-openpyxl
-waitress
