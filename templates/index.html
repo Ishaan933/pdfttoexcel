@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PDF to Excel/CSV Converter</title>
+    <style>
+        #drop-zone {
+            width: 100%;
+            max-width: 400px;
+            height: 200px;
+            margin: 50px auto;
+            border: 2px dashed #ccc;
+            border-radius: 10px;
+            text-align: center;
+            line-height: 200px;
+            font-family: Arial, sans-serif;
+            color: #333;
+            background-color: #f9f9f9;
+        }
+        #drop-zone.drag-over {
+            border-color: #007bff;
+            background-color: #e8f7ff;
+        }
+        #upload-link {
+            display: none;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1 style="text-align: center;">PDF to Excel and CSV Converter</h1>
+    <div id="drop-zone">Drag and drop a PDF file here</div>
+    <p id="upload-link">
+        Files ready for download! 
+        <a href="#" id="excel-link" target="_blank">Download Excel</a> | 
+        <a href="#" id="csv-link" target="_blank">Download CSV</a>
+    </p>
+
+    <script>
+        const dropZone = document.getElementById("drop-zone");
+        const uploadLink = document.getElementById("upload-link");
+        const excelLink = document.getElementById("excel-link");
+        const csvLink = document.getElementById("csv-link");
+
+        dropZone.addEventListener("dragover", (e) => {
+            e.preventDefault();
+            dropZone.classList.add("drag-over");
+        });
+
+        dropZone.addEventListener("dragleave", () => {
+            dropZone.classList.remove("drag-over");
+        });
+
+        dropZone.addEventListener("drop", (e) => {
+            e.preventDefault();
+            dropZone.classList.remove("drag-over");
+
+            const file = e.dataTransfer.files[0];
+
+            if (file && file.type === "application/pdf") {
+                const formData = new FormData();
+                formData.append("file", file);
+
+                fetch("/upload", {
+                    method: "POST",
+                    body: formData,
+                })
+                .then((response) => response.json())
+                .then((data) => {
+                    if (data.success) {
+                        excelLink.href = data.download_excel;
+                        csvLink.href = data.download_csv;
+                        uploadLink.style.display = "block";
+                    } else {
+                        alert("Error: " + data.message);
+                    }
+                })
+                .catch((error) => {
+                    alert("An error occurred: " + error.message);
+                });
+            } else {
+                alert("Please upload a valid PDF file.");
+            }
+        });
+    </script>
+</body>
+</html>
