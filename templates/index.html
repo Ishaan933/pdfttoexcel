@@ -6,13 +6,13 @@
     <title>PDF to CSV/Excel Converter</title>
 </head>
 <body>
-    <h1>Upload PDF to Convert</h1>
+    <h1>PDF to CSV/Excel Converter</h1>
     <div id="drop-area" style="border: 2px dashed #ccc; padding: 20px; text-align: center;">
-        <p>Drag and drop a PDF here, or click to select a file</p>
+        <p>Drag & Drop your PDF here or click below</p>
         <input type="file" id="fileElem" style="display:none" accept="application/pdf" />
         <button onclick="document.getElementById('fileElem').click()">Select a File</button>
     </div>
-    <div id="result"></div>
+    <div id="result" style="margin-top: 20px;"></div>
 
     <script>
         const dropArea = document.getElementById("drop-area");
@@ -44,10 +44,10 @@
 
             const data = await response.json();
             if (data.error) {
-                result.innerHTML = `<p style="color: red;">Error: ${data.error}</p>`;
+                result.innerHTML = `<p style="color:red;">Error: ${data.error}</p>`;
             } else {
                 result.innerHTML = `
-                    <p>Conversion successful! Download files:</p>
+                    <p>Conversion Successful!</p>
                     <a href="${data.csv_download_link}" target="_blank">Download CSV</a><br>
                     <a href="${data.excel_download_link}" target="_blank">Download Excel</a>
                 `;
