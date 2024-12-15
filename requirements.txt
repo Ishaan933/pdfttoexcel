@@ -1,5 +1,4 @@
 Flask
-tabula-py
 pandas
-openpyxl
-waitress
+PyPDF2
+flask_cors
